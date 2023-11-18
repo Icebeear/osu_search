@@ -52,11 +52,10 @@
 
     <h1>Query order</h1>
 
-
     <select class="form-select" aria-label="query order" name="query_order">
-        <option value="favourite_count">Favourites</option>
-        <option value="total_length">Length</option>
-        <option value="submit_date">Date</option>
+        {% for order in view.get_order_values %}
+            <option value="{{order.val}}" {% if query_order == order.val %}selected{% endif %}>{{order.name}} </option>
+        {% endfor %}
     </select>
     
     <br>
@@ -81,10 +80,20 @@
     <h1>Other</h1>
 
     <p>length</p>
-    <input type="number" name="start_length" class="field" placeholder="Min value">
-    <input type="number" name="end_length" class="field" placeholder="Max value">
+    <input type="number" name="start_length" class="field" placeholder="Min value" value="{{start_length}}">
+    <input type="number" name="end_length" class="field" placeholder="Max value" value="{{end_length}}">
 
+    <p>BPM</p>
+    <input type="number" name="start_bpm" class="field" placeholder="Min value" value="{{start_bpm}}">
+    <input type="number" name="end_bpm" class="field" placeholder="Max value" value="{{end_bpm}}">
 
+    <p>Favorites</p>
+    <input type="number" name="start_favorites" class="field" placeholder="Min value" value="{{start_favorites}}">
+    <input type="number" name="end_favorites" class="field" placeholder="Max value" value="{{end_favorites}}">
+
+    <p>Play count</p>
+    <input type="number" name="start_plays" class="field" placeholder="Min value" value="{{start_plays}}">
+    <input type="number" name="end_plays" class="field" placeholder="Max value" value="{{end_plays}}">
 
 
 

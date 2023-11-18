@@ -1,15 +1,8 @@
-from django.shortcuts import render
 from beatmaps.models import Beatmap
 from django.views.generic.list import ListView
 from django.db.models import Q
 from datetime import datetime
 from django.views.generic import TemplateView
-
-# class MapsListView(ListView):
-#     model = Beatmap
-#     context_object_name = 'maps'
-#     template_name = 'beatmaps/index.html'
-
 
 class GenreLanguage:
 
@@ -22,6 +15,59 @@ class GenreLanguage:
     def get_map_types(self):
         return Beatmap.objects.values('map_type').distinct()
     
+    def get_order_values(self):
+        return [
+            {
+                "val": "favourite_count",
+                "name": "Favorites",
+            },
+
+            {
+                "val": "play_count",
+                "name":  "Play count",
+            },
+
+            {
+                "val": "submit_date",
+                "name":  "Date",
+            },
+
+            {
+                "val": "total_length",
+                "name":  "Length",
+            },
+
+            {
+                "val": "star_difficulty",
+                "name":  "Star",
+            },
+            
+            {
+                "val": "bpm",
+                "name":  "BPM",
+            },
+
+            {
+                "val": "ar",
+                "name":  "AR",
+            },
+
+            {
+                "val": "od",
+                "name":  "OD",
+            },
+
+            {
+                "val": "cs",
+                "name":  "CS",
+            },
+
+            {
+                "val": "hp",
+                "name":  "HP",
+            },
+        ]
+    
 
 class MapsView(GenreLanguage, TemplateView):
     template_name = "beatmaps/index.html"
@@ -32,11 +78,6 @@ class FilterMapsView(GenreLanguage, ListView):
     model = Beatmap
     context_object_name = 'maps'
     paginate_by = 10
-
-    # def get_template_names(self):
-    #     if self.request.htmx:
-    #         return 'beatmaps/beatmaps.html'
-    #     return 'beatmaps/beatmaps.html'
     
     def get_queryset(self):
         self.title_input = self.request.GET.get("search-title") or ""
@@ -50,16 +91,21 @@ class FilterMapsView(GenreLanguage, ListView):
         self.start_length = self.request.GET.get("start_length") or 0
         self.end_length = self.request.GET.get("end_length") or 4000
 
+        self.start_bpm = self.request.GET.get("start_bpm") or 0
+        self.end_bpm = self.request.GET.get("end_bpm") or 500
+
+        self.start_favorites = self.request.GET.get("start_favorites") or 0
+        self.end_favorites = self.request.GET.get("end_favorites") or 100_000
+
+        self.start_plays = self.request.GET.get("start_plays") or 0
+        self.end_plays = self.request.GET.get("end_plays") or 100_000_000
+
 
         language_list = self.request.GET.getlist("language") or [data["language"] for data in self.get_languages()]
         genre_list = self.request.GET.getlist("genre") or [data["genre"] for data in self.get_genres()]
         map_types_list = self.request.GET.getlist("map_type") or [data["map_type"] for data in self.get_map_types()]
 
         queryset = Beatmap.objects.all()
-
-        # print(self.start_date)
-        # print(self.end_date)
-        # print(self.start_date < self.end_date)
 
         filter_fields = {
             'artist_input': 'artist__icontains',
@@ -73,6 +119,7 @@ class FilterMapsView(GenreLanguage, ListView):
             if input_value:
                 queryset = queryset.filter(**{filter_type: input_value})
 
+        
         # if self.artist_input:
         #     queryset = queryset.filter(artist__startswith=self.artist_input.title())
 
@@ -85,17 +132,9 @@ class FilterMapsView(GenreLanguage, ListView):
         # if self.mapper_input:
         #     queryset = queryset.filter(mapper__startswith=self.mapper_input)
 
-
-        # filter_fields = {
-        #     'artist_input': 'artist__startswith',
-
-
         '''вроде работает, перепроверить'''
 
-
-        # print("После фильтрации по title:", queryset)  # Отладочный вывод
-
-        # print(self.request.GET.getlist("language")) 
+      
 
         queryset = queryset.filter(
             Q(language__in=language_list),
@@ -104,31 +143,21 @@ class FilterMapsView(GenreLanguage, ListView):
 
             Q(submit_date__range=[self.start_date, self.end_date]),
             Q(total_length__range=[self.start_length, self.end_length]),
+            Q(bpm__range=[self.start_bpm, self.end_bpm]),
+            Q(play_count__range=[self.start_plays, self.end_plays]),
+            Q(favourite_count__range=[self.start_favorites, self.end_favorites]),
         ).distinct()
 
 
-        # queryset = queryset.filter(submit_date__range=[self.start_date, self.end_date])
-        # queryset = queryset.filter(total_length__range=[self.start_length, self.end_length])
 
         self.order = self.request.GET.get('query_order') 
-
         self.order_state = self.request.GET.get('order_state')
-
         self.order = f"-{self.order}" if not self.order_state else self.order 
+
 
         queryset = queryset.order_by(self.order)
         
-        
 
-        
-
-        # if self.order_state:
-        #     queryset = queryset.order_by(self.order)
-        # else:
-        #     queryset = queryset.order_by(f"-{self.order}")
-
-        # print("После фильтрации по языку и жанру:", queryset)  # Отладочный вывод
-        
         return queryset.distinct()
     
     def get_context_data(self, **kwargs):
@@ -141,8 +170,21 @@ class FilterMapsView(GenreLanguage, ListView):
 
         context['start_date'] = self.start_date
         context['end_date'] = self.end_date
-
+        
         context['order_state'] = self.order_state
+        context['query_order'] = self.order.replace("-", "")
+
+        context['start_length'] = self.start_length if self.start_length != 0 else ""
+        context['end_length'] = self.end_length if self.end_length != 4000 else ""
+
+        context['start_bpm'] = self.start_bpm if self.start_bpm != 0 else ""
+        context['end_bpm'] = self.end_bpm if self.end_bpm != 500 else ""
+
+        context['start_favorites'] = self.start_favorites if self.start_favorites != 0 else ""
+        context['end_favorites'] = self.end_favorites if self.end_favorites != 100_000 else ""
+
+        context['start_plays'] = self.start_plays if self.start_plays != 0 else ""
+        context['end_plays'] = self.end_plays if self.end_plays != 100_000_000 else ""
 
         context['genres'] = self.request.GET.getlist("genre")
         context['languages'] = self.request.GET.getlist("language")
@@ -153,16 +195,3 @@ class FilterMapsView(GenreLanguage, ListView):
         
         return context
     
-    
-
-# {% if genre.genre in request.POST.getlist('genre') %}
-# checked
-# {% endif %}>
-
-
-    # def get_context_data(self, *args, **kwargs):
-    #     context = super().get_context_data(*args, **kwargs)
-    #     print(self.request.GET.getlist("language"))
-    #     context["language"] = '&'.join([f"language={x}&" for x in self.request.GET.getlist("language")])
-    #     context["genre"] = '&'.join([f"genre={x}&" for x in self.request.GET.getlist("genre")])
-    #     return context
