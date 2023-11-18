@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if not htmx %}
+        {% include 'beatmaps/form.html' %}
+    {% endif %}
+
+    {% for map in maps %}
+    {% if forloop.last %}
+        <div hx-get="{{request.get_full_path}}&page={{ page_obj.number|add:1 }}" hx-trigger="revealed" hx-swap="afterend" hx-target="this"></div>        
+    {% else %}
+        <div>
+    {% endif %}
+        
+            <h2>{{ map.title }}</h2>
+            <p>genre: {{ map.genre }}</p>
+            <p>lang: {{ map.language }}</p>
+            <p>artist: {{ map.artist }}</p>
+            <p>mapper: {{ map.mapper }}</p>
+            <p>ranking: {{ map.map_type }}</p>
+            <p>favoruites: {{map.favourite_count}}</p>
+            <p>length: {{map.total_length}}</p>
+            <p>date: {{map.submit_date}}</p>
+            <a href="{{ map.link }}">link</a>   
+            <img src="{{ map.image }}">
+        </div>
+
+    {% endfor %}
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+

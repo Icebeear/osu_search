@@ -1,0 +1,99 @@
+<form action="{% url 'beatmaps:filter' %}" method="get" name="filter">
+
+    <p>Title</p>
+    <input type="text" name="search-title" value="{{search_title}}" class="field">
+
+    <br>
+
+    <p>artist</p>
+    <input type="text" name="search-artist" value="{{search_artist}}" class="field">
+
+    <br>
+
+    <p>source</p>
+    <input type="text" name="search-source" value="{{search_source}}" class="field">
+    
+    <br>
+
+    <p>mapper</p>
+    <input type="text" name="search-mapper" value="{{search_mapper}}" class="field">
+    
+    <br>
+
+    {% for map in view.get_map_types %}
+        <input type="checkbox" class="btn-check" id="{{ map.map_type }}" autocomplete="off" value="{{ map.map_type }}" name="map_type"
+        {% if map.map_type in map_types %}
+            checked
+        {% endif %}>
+        <label class="btn btn-outline-primary" for="{{ map.map_type }}">{{ map.map_type }}</label>
+    {% endfor %}
+    <br>
+
+
+    {% for genre in view.get_genres %}
+        <input type="checkbox" class="btn-check" id="genre_{{ genre.genre }}" autocomplete="off" value="{{ genre.genre }}" name="genre"
+        {% if genre.genre in genres %}
+            checked
+        {% endif %}>
+        <label class="btn btn-outline-primary" for="genre_{{ genre.genre }}">{{ genre.genre }}</label>
+    {% endfor %}
+
+    <br>
+
+    {% for language in view.get_languages %}
+        <input type="checkbox" class="btn-check" id="lang_{{language.language}}" autocomplete="off" value="{{language.language}}" name="language"
+        {% if language.language in languages %}
+            checked
+        {% endif %}>
+        <label class="btn btn-outline-primary" for="lang_{{language.language}}">{{language.language}}</label>
+    {% endfor %}
+
+    <br>
+
+    <h1>Query order</h1>
+
+
+    <select class="form-select" aria-label="query order" name="query_order">
+        <option value="favourite_count">Favourites</option>
+        <option value="total_length">Length</option>
+        <option value="submit_date">Date</option>
+    </select>
+    
+    <br>
+
+    <div class="form-check form-switch">
+        <label class="form-check-label" for="flexSwitchCheckDefault">reverse</label>
+        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="order_state" 
+        {% if order_state %}
+            checked
+        {% endif %}>
+    </div>
+
+    <label for="start">Start date:</label>
+    <input type="date" id="start" name="start_date" value="{{start_date}}"/>
+
+    
+    <label for="end">End date:</label>
+    <input type="date" id="start" name="end_date" value="{{end_date}}"/>
+
+    <br>
+
+    <h1>Other</h1>
+
+    <p>length</p>
+    <input type="number" name="start_length" class="field" placeholder="Min value">
+    <input type="number" name="end_length" class="field" placeholder="Max value">
+
+
+
+
+
+
+    <br>
+    <button type="submit" class="btn btn-success">Search</button>
+</form>
+
+<a href="{% url 'beatmaps:index' %}" type="button" class="btn btn-danger">Reset</a>
+
+
+    
