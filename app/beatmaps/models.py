@@ -24,6 +24,7 @@ class Beatmap(models.Model):
     cs = models.FloatField()
 
     submit_date = models.DateField()
+    song_id = models.IntegerField()
 
     def __str__(self):
         return f"{self.title} - {self.star_difficulty}"

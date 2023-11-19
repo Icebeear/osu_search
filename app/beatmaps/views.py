@@ -4,16 +4,16 @@ from django.db.models import Q
 from datetime import datetime
 from django.views.generic import TemplateView
 
-class GenreLanguage:
+class FormValues:
 
     def get_languages(self):
-        return Beatmap.objects.values("language").distinct()
+        return Beatmap.objects.values("language").distinct().order_by("language")
 
     def get_genres(self):
-        return Beatmap.objects.values('genre').distinct()
+        return Beatmap.objects.values('genre').distinct().order_by("genre")
     
     def get_map_types(self):
-        return Beatmap.objects.values('map_type').distinct()
+        return Beatmap.objects.values('map_type').distinct().order_by("map_type")
     
     def get_order_values(self):
         return [
@@ -67,13 +67,13 @@ class GenreLanguage:
                 "name":  "HP",
             },
         ]
-    
 
-class MapsView(GenreLanguage, TemplateView):
+
+class MapsView(FormValues, TemplateView):
     template_name = "beatmaps/index.html"
     
 
-class FilterMapsView(GenreLanguage, ListView):
+class FilterMapsView(FormValues, ListView):
     template_name = "beatmaps/beatmaps.html"
     model = Beatmap
     context_object_name = 'maps'
@@ -101,11 +101,46 @@ class FilterMapsView(GenreLanguage, ListView):
         self.end_plays = self.request.GET.get("end_plays") or 100_000_000
 
 
+        self.start_ar = self.request.GET.get("start_ar") or 0 
+        self.end_ar = self.request.GET.get("end_ar") or 10 
+
+        self.start_star = self.request.GET.get("start_star") or 0 
+        self.end_star = self.request.GET.get("end_star") or 10 
+
+        self.start_od = self.request.GET.get("start_od") or 0 
+        self.end_od = self.request.GET.get("end_od") or 10 
+
+        
+        self.start_cs = self.request.GET.get("start_cs") or 0 
+        self.end_cs = self.request.GET.get("end_cs") or 10 
+
+        self.start_hp = self.request.GET.get("start_hp") or 0 
+        self.end_hp = self.request.GET.get("end_hp") or 10 
+
+        # print(self.start_star)
+        # print(self.end_star)
+
+
+        # print(self.start_ar)
+        # print(self.end_ar)
+
+
+        # print(self.start_od)
+        # print(self.end_od)
+
+        # print(self.start_cs)
+        # print(self.end_cs)
+
+        # print(self.start_hp)
+        # print(self.end_hp)
+
+
+
         language_list = self.request.GET.getlist("language") or [data["language"] for data in self.get_languages()]
         genre_list = self.request.GET.getlist("genre") or [data["genre"] for data in self.get_genres()]
         map_types_list = self.request.GET.getlist("map_type") or [data["map_type"] for data in self.get_map_types()]
 
-        queryset = Beatmap.objects.all()
+        queryset = Beatmap.objects.all().distinct()
 
         filter_fields = {
             'artist_input': 'artist__icontains',
@@ -146,6 +181,12 @@ class FilterMapsView(GenreLanguage, ListView):
             Q(bpm__range=[self.start_bpm, self.end_bpm]),
             Q(play_count__range=[self.start_plays, self.end_plays]),
             Q(favourite_count__range=[self.start_favorites, self.end_favorites]),
+
+            Q(star_difficulty__range=[self.start_star, self.end_star]),
+            Q(ar__range=[self.start_ar, self.end_ar]),
+            Q(od__range=[self.start_od, self.end_od]),
+            Q(cs__range=[self.start_cs, self.end_cs]),
+            Q(hp__range=[self.start_hp, self.end_hp]),
         ).distinct()
 
 
@@ -162,6 +203,8 @@ class FilterMapsView(GenreLanguage, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context["htmx"] = bool(self.request.htmx)
 
         context['search_title'] = self.title_input 
         context['search_artist'] = self.artist_input
@@ -190,8 +233,20 @@ class FilterMapsView(GenreLanguage, ListView):
         context['languages'] = self.request.GET.getlist("language")
         context['map_types'] = self.request.GET.getlist("map_type")
 
-        context["htmx"] = bool(self.request.htmx)
 
-        
+        context["start_star"] = self.start_star
+        context["end_star"] = self.end_star
+
+        context["start_ar"] = self.start_ar
+        context["end_ar"] = self.end_ar
+
+        context["start_od"] = self.start_od
+        context["end_od"] = self.end_od
+
+        context["start_cs"] = self.start_cs
+        context["end_cs"] = self.end_cs
+
+        context["start_hp"] = self.start_hp
+        context["end_hp"] = self.end_hp
+
         return context
-    

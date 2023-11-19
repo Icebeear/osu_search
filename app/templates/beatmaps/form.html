@@ -5,6 +5,9 @@
 
     <br>
 
+
+    
+
     <p>artist</p>
     <input type="text" name="search-artist" value="{{search_artist}}" class="field">
 
@@ -96,6 +99,91 @@
     <input type="number" name="end_plays" class="field" placeholder="Max value" value="{{end_plays}}">
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <p>
+        <label for="min-star">star min</label>
+        <input type="number" id="min-star" min="0" max="10" step="0.1" name="start_star" {% if start_star %} value="{{start_star}}" {% else %} value="0" {% endif %}>
+    </p>
+      
+    <p>
+        <label for="max-star">star max</label>
+        <input type="number" id="max-star" min="0" max="10" step="0.1" name="end_star"  {% if end_star %} value="{{end_star}}" {% else %} value="10" {% endif %}>
+    </p>
+      
+    <div id="slider-star" class="slider"></div>
+
+
+
+      <p>
+        <label for="min-ar">ar min</label>
+        <input type="number" id="min-ar" min="0" max="10" step="0.1" name="start_ar" {% if start_ar %} value="{{start_ar}}" {% else %} value="0" {% endif %}>
+      </p>
+      
+      <p>
+        <label for="max-ar">ar max</label>
+        <input type="number" id="max-ar" min="0" max="10" step="0.1" name="end_ar" {% if end_ar %} value="{{end_ar}}" {% else %} value="10" {% endif %}>
+      </p>
+      
+      <div id="slider-ar" class="slider"></div>
+
+
+
+
+      <p>
+        <label for="min-od">od min</label>
+        <input type="number" id="min-od" min="0" max="10" step="0.1" name="start_od" {% if start_od %} value="{{start_od}}" {% else %} value="0" {% endif %}>
+      </p>
+      
+      <p>
+        <label for="max-od">od max</label>
+        <input type="number" id="max-od" min="0" max="10" step="0.1" name="end_od" {% if end_od %} value="{{end_od}}" {% else %} value="10" {% endif %}>
+      </p>
+      
+      <div id="slider-od" class="slider"></div>
+
+
+
+
+      <p>
+        <label for="min-cs">cs min</label>
+        <input type="number" id="min-cs" min="0" max="10" step="0.1" name="start_cs" {% if start_cs %} value="{{start_cs}}" {% else %} value="0" {% endif %}>
+      </p>
+      
+      <p>
+        <label for="max-cs">cs max</label>
+        <input type="number" id="max-cs" min="0" max="10" step="0.1" name="end_cs" {% if end_cs %} value="{{end_cs}}" {% else %} value="10" {% endif %}>
+      </p>
+      
+      <div id="slider-cs" class="slider"></div>
+
+
+
+
+
+      <p>
+        <label for="min-hp">hp min</label>
+        <input type="number" id="min-hp" min="0" max="10" step="0.1" name="start_hp" {% if start_hp %} value="{{start_hp}}" {% else %} value="0" {% endif %}>
+      </p>
+      
+      <p>
+        <label for="max-hp">hp max</label>
+        <input type="number" id="max-hp" min="0" max="10" step="0.1" name="end_hp" {% if end_hp %} value="{{end_hp}}" {% else %} value="10" {% endif %}>
+      </p>
+      
+      <div id="slider-hp" class="slider"></div>
 
 
     <br>

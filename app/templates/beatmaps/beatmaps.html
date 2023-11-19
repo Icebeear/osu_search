@@ -12,7 +12,31 @@
         <div>
     {% endif %}
         
+  
             <h2>{{ map.title }}</h2>
+
+
+            <audio id="audioPlayer{{map.song_id}}">
+                <source src="//b.ppy.sh/preview/{{map.song_id}}.mp3" type="audio/mp3">
+            </audio>
+            <button onclick="toggleAudio('{{map.song_id}}')">Play</button>
+            
+            
+            <script>
+                function toggleAudio(songId) {
+                    var audio = document.getElementById("audioPlayer" + songId);
+                    var isPlaying = audio.paused;
+            
+                    if (isPlaying) {
+                        audio.play();
+                    } else {
+                        audio.pause();
+                    }
+                }
+            </script>
+
+
+
             <p>genre: {{ map.genre }}</p>
             <p>lang: {{ map.language }}</p>
             <p>artist: {{ map.artist }}</p>
@@ -24,6 +48,11 @@
             <p>bpm : {{map.bpm}}</p>
             <p>favorites : {{map.favourite_count}}</p>
             <p>plays : {{map.play_count}}</p>
+
+            <p>ar : {{map.ar}}</p>
+            <p>od : {{map.od}}</p>
+            <p>hp : {{map.hp}}</p>
+            <p>cs : {{map.cs}}</p>
             <a href="{{ map.link }}">link</a>   
             <img src="{{ map.image }}">
         </div>
