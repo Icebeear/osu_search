@@ -1,12 +1,15 @@
-<form action="{% url 'beatmaps:filter' %}" method="get" name="filter">
+<form action="{% url 'beatmaps:search' %}" method="get" name="search">
 
+
+
+
+
+
+  
     <p>Title</p>
     <input type="text" name="search-title" value="{{search_title}}" class="field">
 
     <br>
-
-
-    
 
     <p>artist</p>
     <input type="text" name="search-artist" value="{{search_artist}}" class="field">
@@ -23,32 +26,34 @@
     
     <br>
 
+
+
     {% for map in view.get_map_types %}
-        <input type="checkbox" class="btn-check" id="{{ map.map_type }}" autocomplete="off" value="{{ map.map_type }}" name="map_type"
-        {% if map.map_type in map_types %}
+        <input type="checkbox" class="btn-check" id="{{ map.type }}" autocomplete="off" value="{{ map.type }}" name="map_type"
+        {% if map.type in map_types %}
             checked
         {% endif %}>
-        <label class="btn btn-outline-primary" for="{{ map.map_type }}">{{ map.map_type }}</label>
+        <label class="btn btn-outline-primary" for="{{ map.type }}">{{ map.type }}</label>
     {% endfor %}
     <br>
 
 
     {% for genre in view.get_genres %}
-        <input type="checkbox" class="btn-check" id="genre_{{ genre.genre }}" autocomplete="off" value="{{ genre.genre }}" name="genre"
-        {% if genre.genre in genres %}
+        <input type="checkbox" class="btn-check" id="genre_{{ genre.name }}" autocomplete="off" value="{{ genre.name }}" name="genre"
+        {% if genre.name in genres %}
             checked
         {% endif %}>
-        <label class="btn btn-outline-primary" for="genre_{{ genre.genre }}">{{ genre.genre }}</label>
+        <label class="btn btn-outline-primary" for="genre_{{ genre.name }}">{{ genre.name }}</label>
     {% endfor %}
 
     <br>
 
     {% for language in view.get_languages %}
-        <input type="checkbox" class="btn-check" id="lang_{{language.language}}" autocomplete="off" value="{{language.language}}" name="language"
-        {% if language.language in languages %}
+        <input type="checkbox" class="btn-check" id="lang_{{language.name}}" autocomplete="off" value="{{language.name}}" name="language"
+        {% if language.name in languages %}
             checked
         {% endif %}>
-        <label class="btn btn-outline-primary" for="lang_{{language.language}}">{{language.language}}</label>
+        <label class="btn btn-outline-primary" for="lang_{{language.name}}">{{language.name}}</label>
     {% endfor %}
 
     <br>
@@ -76,9 +81,16 @@
 
     
     <label for="end">End date:</label>
-    <input type="date" id="start" name="end_date" value="{{end_date}}"/>
+    <input type="date" id="end" name="end_date" value="{{end_date}}"/>
 
     <br>
+
+
+
+
+
+
+
 
     <h1>Other</h1>
 
@@ -187,10 +199,23 @@
 
 
     <br>
+
+    <div class="form-check form-switch">
+      <label class="form-check-label" for="flexSwitchCheckDefault">infinite scroll</label>
+      <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="scroll_state" 
+      {% if scroll_state %}
+          checked
+      {% endif %}>
+    </div>
+
+    <input type="range" min="0" max="100" value="{{volume}}" class="slider" id="myRange" name="volume">
+
+    <br>
+
     <button type="submit" class="btn btn-success">Search</button>
+
+
 </form>
 
 <a href="{% url 'beatmaps:index' %}" type="button" class="btn btn-danger">Reset</a>
-
-
     

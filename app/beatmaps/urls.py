@@ -6,5 +6,5 @@ app_name = "beatmaps"
 
 urlpatterns = [
     path('', views.MapsView.as_view(), name="index"),
-    path('filter/', views.FilterMapsView.as_view(), name="filter"),
+    path('search/', views.FilterMapsView.as_view(), name="search"),
 ]

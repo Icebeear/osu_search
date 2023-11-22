@@ -7,13 +7,24 @@ from django.views.generic import TemplateView
 class FormValues:
 
     def get_languages(self):
-        return Beatmap.objects.values("language").distinct().order_by("language")
+        # return Beatmap.objects.values("language").distinct().order_by("language")
+        return [{"name": language} for language in ["japanese", "instrumental", 
+                                                    "english", "russian", "korean",
+                                                    "chinese", "german", "polish",
+                                                    "french", "italian", "spanish",
+                                                    "swedish", "other"]]
 
     def get_genres(self):
-        return Beatmap.objects.values('genre').distinct().order_by("genre")
+        # return Beatmap.objects.values('genre').distinct().order_by("genre")
+        return [{"name": genre} for genre in ["anime", "rock", "metal", 
+                                              "pop", "video game", "electronic", 
+                                              "hip hop", "classical", 
+                                              "jazz", "folk", "novelty"]]
     
     def get_map_types(self):
-        return Beatmap.objects.values('map_type').distinct().order_by("map_type")
+        # return Beatmap.objects.values('map_type').distinct().order_by("map_type")
+        return [{"type": map_type} for map_type in ["ranked", "approved", "qualified", 
+                                                    "loved", "pending", "WIP"]]
     
     def get_order_values(self):
         return [
@@ -67,6 +78,9 @@ class FormValues:
                 "name":  "HP",
             },
         ]
+    
+    def get_map_conditions(self):
+        return None 
 
 
 class MapsView(FormValues, TemplateView):
@@ -117,28 +131,14 @@ class FilterMapsView(FormValues, ListView):
         self.start_hp = self.request.GET.get("start_hp") or 0 
         self.end_hp = self.request.GET.get("end_hp") or 10 
 
-        # print(self.start_star)
-        # print(self.end_star)
+        self.volume = self.request.GET.get("volume") or 30
+
+        self.scroll_state = self.request.GET.get("scroll_state")
 
 
-        # print(self.start_ar)
-        # print(self.end_ar)
-
-
-        # print(self.start_od)
-        # print(self.end_od)
-
-        # print(self.start_cs)
-        # print(self.end_cs)
-
-        # print(self.start_hp)
-        # print(self.end_hp)
-
-
-
-        language_list = self.request.GET.getlist("language") or [data["language"] for data in self.get_languages()]
-        genre_list = self.request.GET.getlist("genre") or [data["genre"] for data in self.get_genres()]
-        map_types_list = self.request.GET.getlist("map_type") or [data["map_type"] for data in self.get_map_types()]
+        language_list = self.request.GET.getlist("language") or [data["name"] for data in self.get_languages()]
+        genre_list = self.request.GET.getlist("genre") or [data["name"] for data in self.get_genres()]
+        map_types_list = self.request.GET.getlist("map_type") or [data["type"] for data in self.get_map_types()]
 
         queryset = Beatmap.objects.all().distinct()
 
@@ -154,22 +154,6 @@ class FilterMapsView(FormValues, ListView):
             if input_value:
                 queryset = queryset.filter(**{filter_type: input_value})
 
-        
-        # if self.artist_input:
-        #     queryset = queryset.filter(artist__startswith=self.artist_input.title())
-
-        # if self.title_input:
-        #     queryset = queryset.filter(title__startswith=self.title_input)
-
-        # if self.source_input:
-        #     queryset = queryset.filter(source__startswith=self.source_input)
-
-        # if self.mapper_input:
-        #     queryset = queryset.filter(mapper__startswith=self.mapper_input)
-
-        '''вроде работает, перепроверить'''
-
-      
 
         queryset = queryset.filter(
             Q(language__in=language_list),
@@ -187,7 +171,7 @@ class FilterMapsView(FormValues, ListView):
             Q(od__range=[self.start_od, self.end_od]),
             Q(cs__range=[self.start_cs, self.end_cs]),
             Q(hp__range=[self.start_hp, self.end_hp]),
-        ).distinct()
+        )
 
 
 
@@ -199,7 +183,7 @@ class FilterMapsView(FormValues, ListView):
         queryset = queryset.order_by(self.order)
         
 
-        return queryset.distinct()
+        return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -248,5 +232,8 @@ class FilterMapsView(FormValues, ListView):
 
         context["start_hp"] = self.start_hp
         context["end_hp"] = self.end_hp
+
+        context["scroll_state"] = self.scroll_state
+        context["volume"] = self.volume
 
         return context

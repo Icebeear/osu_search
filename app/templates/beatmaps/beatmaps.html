@@ -1,20 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
     {% if not htmx %}
         {% include 'beatmaps/form.html' %}
     {% endif %}
 
+    <div id="maps">
     {% for map in maps %}
-    {% if forloop.last %}
-        <div hx-get="{{request.get_full_path}}&page={{ page_obj.number|add:1 }}" hx-trigger="revealed" hx-swap="afterend" hx-target="this"></div>        
-    {% else %}
-        <div>
-    {% endif %}
-        
-  
-            <h2>{{ map.title }}</h2>
 
+        {% if scroll_state %}
+            {% if forloop.last %}
+                <div hx-get="{{request.get_full_path}}&page={{ page_obj.number|add:1 }}" hx-trigger="revealed" hx-swap="afterend" hx-target="this">
+            {% endif %}  
+        {% endif %}
+
+        <div class="map_card">
+            <h2>{{ map.title }}</h2>
 
             <audio id="audioPlayer{{map.song_id}}">
                 <source src="//b.ppy.sh/preview/{{map.song_id}}.mp3" type="audio/mp3">
@@ -35,8 +37,6 @@
                 }
             </script>
 
-
-
             <p>genre: {{ map.genre }}</p>
             <p>lang: {{ map.language }}</p>
             <p>artist: {{ map.artist }}</p>
@@ -53,18 +53,58 @@
             <p>od : {{map.od}}</p>
             <p>hp : {{map.hp}}</p>
             <p>cs : {{map.cs}}</p>
+
             <a href="{{ map.link }}">link</a>   
             <img src="{{ map.image }}">
         </div>
+  
+    {% if not scroll_state %}        
+        {% if forloop.last %}
+            <button id="more" hx-get="{{request.get_full_path}}&page={{ page_obj.number|add:1 }}" hx-trigger="click" hx-swap="outerHTML" hx-target="#maps">load more</button>
+
+            <script>
+                var button = document.querySelector('#more');
+                // Добавление обработчика события на клик по кнопке
+                button.addEventListener('click', function() {
+                // Плавная прокрутка страницы вверх
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            </script>
+
+            
+
+            {% endif %}
+    {% endif %}
 
     {% endfor %}
+        <script>
+                                
+            var slider = document.getElementById("myRange");
+            var audios = document.getElementsByTagName("audio");
+            
+            saveVolume();
+        
+            slider.oninput = function() {
+                for (var i = 0; i < audios.length; i++) {
+                    audios[i].volume = this.value / 100;
+                }
+            };
+            
+            window.onload = function() {
+                for (var i = 0; i < audios.length; i++) {
+                    audios[i].volume = slider.value / 100;
+                }
+            };
+
+            function saveVolume() {
+                for (var i = 0; i < audios.length; i++) {
+                    audios[i].volume = slider.value / 100;
+                }
+            }
+            
+        </script>
     </div>
 {% endblock %}
-
-
-
-
-
-
-
-
