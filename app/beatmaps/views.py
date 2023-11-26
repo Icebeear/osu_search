@@ -1,8 +1,11 @@
 from beatmaps.models import Beatmap
-from django.views.generic.list import ListView
 from django.db.models import Q
-from datetime import datetime
+
 from django.views.generic import TemplateView
+from django.views.generic.list import ListView
+
+from datetime import datetime
+
 
 class FormValues:
 
@@ -79,8 +82,8 @@ class FormValues:
             },
         ]
     
-    def get_map_conditions(self):
-        return None 
+    # def get_main_fields(self):
+    #     return {"title", "artist", "source", "mapper"} 
 
 
 class MapsView(FormValues, TemplateView):
@@ -91,45 +94,44 @@ class FilterMapsView(FormValues, ListView):
     template_name = "beatmaps/beatmaps.html"
     model = Beatmap
     context_object_name = 'maps'
-    paginate_by = 10
+    paginate_by = 12
     
     def get_queryset(self):
-        self.title_input = self.request.GET.get("search-title") or ""
-        self.artist_input = self.request.GET.get("search-artist") or ""
-        self.source_input = self.request.GET.get("search-source") or ""
-        self.mapper_input = self.request.GET.get("search-mapper") or ""  
+        self.title = self.request.GET.get("title") or ""
+        self.artist = self.request.GET.get("artist") or ""
+        self.source = self.request.GET.get("source") or ""
+        self.mapper = self.request.GET.get("mapper") or ""  
 
-        self.start_date = self.request.GET.get("start_date") or "2007-10-06"
-        self.end_date = self.request.GET.get("end_date") or datetime.now().strftime("%Y-%m-%d")
+        self.min_date = self.request.GET.get("min_date") or "2007-10-06"
+        self.max_date = self.request.GET.get("max_date") or datetime.now().strftime("%Y-%m-%d")
 
-        self.start_length = self.request.GET.get("start_length") or 0
-        self.end_length = self.request.GET.get("end_length") or 4000
+        self.min_length = self.request.GET.get("min_length") or 0
+        self.max_length = self.request.GET.get("max_length") or 4000
 
-        self.start_bpm = self.request.GET.get("start_bpm") or 0
-        self.end_bpm = self.request.GET.get("end_bpm") or 500
+        self.min_bpm = self.request.GET.get("min_bpm") or 0
+        self.max_bpm = self.request.GET.get("max_bpm") or 500
 
-        self.start_favorites = self.request.GET.get("start_favorites") or 0
-        self.end_favorites = self.request.GET.get("end_favorites") or 100_000
+        self.min_favorites = self.request.GET.get("min_favorites") or 0
+        self.max_favorites = self.request.GET.get("max_favorites") or 100_000
 
-        self.start_plays = self.request.GET.get("start_plays") or 0
-        self.end_plays = self.request.GET.get("end_plays") or 100_000_000
+        self.min_plays = self.request.GET.get("min_plays") or 0
+        self.max_plays = self.request.GET.get("max_plays") or 100_000_000
 
 
-        self.start_ar = self.request.GET.get("start_ar") or 0 
-        self.end_ar = self.request.GET.get("end_ar") or 10 
+        self.min_ar = self.request.GET.get("min_ar") or 0 
+        self.max_ar = self.request.GET.get("max_ar") or 10 
 
-        self.start_star = self.request.GET.get("start_star") or 0 
-        self.end_star = self.request.GET.get("end_star") or 10 
+        self.min_star = self.request.GET.get("min_star") or 0 
+        self.max_star = self.request.GET.get("max_star") or 10 
 
-        self.start_od = self.request.GET.get("start_od") or 0 
-        self.end_od = self.request.GET.get("end_od") or 10 
+        self.min_od = self.request.GET.get("min_od") or 0 
+        self.max_od = self.request.GET.get("max_od") or 10 
 
-        
-        self.start_cs = self.request.GET.get("start_cs") or 0 
-        self.end_cs = self.request.GET.get("end_cs") or 10 
+        self.min_cs = self.request.GET.get("min_cs") or 0 
+        self.max_cs = self.request.GET.get("max_cs") or 10 
 
-        self.start_hp = self.request.GET.get("start_hp") or 0 
-        self.end_hp = self.request.GET.get("end_hp") or 10 
+        self.min_hp = self.request.GET.get("min_hp") or 0 
+        self.max_hp = self.request.GET.get("max_hp") or 10 
 
         self.volume = self.request.GET.get("volume") or 30
 
@@ -143,10 +145,10 @@ class FilterMapsView(FormValues, ListView):
         queryset = Beatmap.objects.all().distinct()
 
         filter_fields = {
-            'artist_input': 'artist__icontains',
-            'title_input': 'title__icontains',
-            'source_input': 'source__icontains',
-            'mapper_input': 'mapper__icontains',
+            'artist': 'artist__icontains',
+            'title': 'title__icontains',
+            'source': 'source__icontains',
+            'mapper': 'mapper__icontains',
         }
 
         for field, filter_type in filter_fields.items():
@@ -160,17 +162,17 @@ class FilterMapsView(FormValues, ListView):
             Q(genre__in=genre_list),
             Q(map_type__in=map_types_list),
 
-            Q(submit_date__range=[self.start_date, self.end_date]),
-            Q(total_length__range=[self.start_length, self.end_length]),
-            Q(bpm__range=[self.start_bpm, self.end_bpm]),
-            Q(play_count__range=[self.start_plays, self.end_plays]),
-            Q(favourite_count__range=[self.start_favorites, self.end_favorites]),
+            Q(submit_date__range=[self.min_date, self.max_date]),
+            Q(total_length__range=[self.min_length, self.max_length]),
+            Q(bpm__range=[self.min_bpm, self.max_bpm]),
+            Q(play_count__range=[self.min_plays, self.max_plays]),
+            Q(favourite_count__range=[self.min_favorites, self.max_favorites]),
 
-            Q(star_difficulty__range=[self.start_star, self.end_star]),
-            Q(ar__range=[self.start_ar, self.end_ar]),
-            Q(od__range=[self.start_od, self.end_od]),
-            Q(cs__range=[self.start_cs, self.end_cs]),
-            Q(hp__range=[self.start_hp, self.end_hp]),
+            Q(star_difficulty__range=[self.min_star, self.max_star]),
+            Q(ar__range=[self.min_ar, self.max_ar]),
+            Q(od__range=[self.min_od, self.max_od]),
+            Q(cs__range=[self.min_cs, self.max_cs]),
+            Q(hp__range=[self.min_hp, self.max_hp]),
         )
 
 
@@ -190,48 +192,48 @@ class FilterMapsView(FormValues, ListView):
 
         context["htmx"] = bool(self.request.htmx)
 
-        context['search_title'] = self.title_input 
-        context['search_artist'] = self.artist_input
-        context['search_source'] = self.source_input
-        context['search_mapper'] = self.mapper_input
+        context['title'] = self.title
+        context['artist'] = self.artist
+        context['source'] = self.source
+        context['mapper'] = self.mapper
 
-        context['start_date'] = self.start_date
-        context['end_date'] = self.end_date
+        context['min_date'] = self.min_date
+        context['max_date'] = self.max_date
         
         context['order_state'] = self.order_state
         context['query_order'] = self.order.replace("-", "")
 
-        context['start_length'] = self.start_length if self.start_length != 0 else ""
-        context['end_length'] = self.end_length if self.end_length != 4000 else ""
+        context['min_length'] = self.min_length if self.min_length != 0 else ""
+        context['max_length'] = self.max_length if self.max_length != 4000 else ""
 
-        context['start_bpm'] = self.start_bpm if self.start_bpm != 0 else ""
-        context['end_bpm'] = self.end_bpm if self.end_bpm != 500 else ""
+        context['min_bpm'] = self.min_bpm if self.min_bpm != 0 else ""
+        context['max_bpm'] = self.max_bpm if self.max_bpm != 500 else ""
 
-        context['start_favorites'] = self.start_favorites if self.start_favorites != 0 else ""
-        context['end_favorites'] = self.end_favorites if self.end_favorites != 100_000 else ""
+        context['min_favorites'] = self.min_favorites if self.min_favorites != 0 else ""
+        context['max_favorites'] = self.max_favorites if self.max_favorites != 100_000 else ""
 
-        context['start_plays'] = self.start_plays if self.start_plays != 0 else ""
-        context['end_plays'] = self.end_plays if self.end_plays != 100_000_000 else ""
+        context['min_plays'] = self.min_plays if self.min_plays != 0 else ""
+        context['max_plays'] = self.max_plays if self.max_plays != 100_000_000 else ""
 
         context['genres'] = self.request.GET.getlist("genre")
         context['languages'] = self.request.GET.getlist("language")
         context['map_types'] = self.request.GET.getlist("map_type")
 
 
-        context["start_star"] = self.start_star
-        context["end_star"] = self.end_star
+        context["min_star"] = self.min_star
+        context["max_star"] = self.max_star
 
-        context["start_ar"] = self.start_ar
-        context["end_ar"] = self.end_ar
+        context["min_ar"] = self.min_ar
+        context["max_ar"] = self.max_ar
 
-        context["start_od"] = self.start_od
-        context["end_od"] = self.end_od
+        context["min_od"] = self.min_od
+        context["max_od"] = self.max_od
 
-        context["start_cs"] = self.start_cs
-        context["end_cs"] = self.end_cs
+        context["min_cs"] = self.min_cs
+        context["max_cs"] = self.max_cs
 
-        context["start_hp"] = self.start_hp
-        context["end_hp"] = self.end_hp
+        context["min_hp"] = self.min_hp
+        context["max_hp"] = self.max_hp
 
         context["scroll_state"] = self.scroll_state
         context["volume"] = self.volume

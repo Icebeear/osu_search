@@ -1,32 +1,33 @@
 {% extends 'base.html' %}
-
+{% load custom_tags %}
 {% block content %}
 
     {% if not htmx %}
         {% include 'beatmaps/form.html' %}
     {% endif %}
 
-    <div id="maps">
+    
+    <div class="row" id="maps">
     {% for map in maps %}
 
-        {% if scroll_state %}
-            {% if forloop.last %}
-                <div hx-get="{{request.get_full_path}}&page={{ page_obj.number|add:1 }}" hx-trigger="revealed" hx-swap="afterend" hx-target="this">
-            {% endif %}  
-        {% endif %}
-
-        <div class="map_card">
-            <h2>{{ map.title }}</h2>
-
-            <audio id="audioPlayer{{map.song_id}}">
-                <source src="//b.ppy.sh/preview/{{map.song_id}}.mp3" type="audio/mp3">
-            </audio>
-            <button onclick="toggleAudio('{{map.song_id}}')">Play</button>
-            
-            
+        
+        
             <script>
+                var audioPlayers = {};
+            
                 function toggleAudio(songId) {
-                    var audio = document.getElementById("audioPlayer" + songId);
+                    if (audioPlayers[songId] === undefined) {
+                        audioPlayers[songId] = document.getElementById("audioPlayer" + songId);
+                    }
+            
+                    var audio = audioPlayers[songId];
+            
+                    Object.keys(audioPlayers).forEach(function(key) {
+                        if (key !== songId) {
+                            audioPlayers[key].pause();
+                        }
+                    });
+            
                     var isPlaying = audio.paused;
             
                     if (isPlaying) {
@@ -36,50 +37,64 @@
                     }
                 }
             </script>
+            
+            <div class="col-xl-4 col-lg-6 col-md-12">
 
-            <p>genre: {{ map.genre }}</p>
-            <p>lang: {{ map.language }}</p>
-            <p>artist: {{ map.artist }}</p>
-            <p>mapper: {{ map.mapper }}</p>
-            <p>ranking: {{ map.map_type }}</p>
-            <p>length: {{map.total_length}}</p>
-            <p>date: {{map.submit_date}}</p>
-            <p>star : {{map.star_difficulty}}</p>
-            <p>bpm : {{map.bpm}}</p>
-            <p>favorites : {{map.favourite_count}}</p>
-            <p>plays : {{map.play_count}}</p>
+                <audio id="audioPlayer{{map.song_id}}">
+                    <source src="//b.ppy.sh/preview/{{map.song_id}}.mp3" type="audio/mp3">
+                </audio>
+    
+        
 
-            <p>ar : {{map.ar}}</p>
-            <p>od : {{map.od}}</p>
-            <p>hp : {{map.hp}}</p>
-            <p>cs : {{map.cs}}</p>
+                <div class="map-card">
+                    <div class="row">
+                        <div class="col">
+                            <img src="https://assets.ppy.sh/beatmaps/{{map.song_id}}/covers/list@2x.jpg" alt="Image" class="map-img" onclick="toggleAudio('{{map.song_id}}')">
+                        </div>
+                        <div class="col">
+                            <div class="fields">
+                                <div class="map-title"><a href="{{ map.link }}" target=»_blank»>{{ map.title}}</a></div>
+                                <div class="field1"><i class="fa-solid fa-microphone"></i> {{ map.artist }}</div>
+                                <div class="field1"><i class="fa-solid fa-user"></i> {{ map.mapper }}</div>
+                                <div class="field1"><i class="fa-solid fa-hourglass-end"></i> {{ map.total_length|format_time }}</div>
+                                <div class="field1"><i class="fa-solid fa-calendar"></i> {{ map.submit_date }}</div>
+                                <div class="field1"><i class="fa-solid fa-hashtag"></i> {{ map.source }}</div>
+                              </div>
+                        </div>
+                    </div>
+                    
+                    
+                      <div class="icons">
+                        <div class="icon" style="background-color: {% set_color map.star_difficulty  %}"><i class="fa-solid fa-star"></i> <span>{% format_dif map.star_difficulty %}</span></div>
+                        <div class="icon"><span>AR</span> {{map.ar}}</div>
+                        <div class="icon"><span>OD</span> {{map.od}}</div>
+                        <div class="icon"><span>CS</span> {{map.cs}}</div>
+                        <div class="icon"><span>HP</span> {{map.hp}}</div>
+                        <div class="icon-bpm"><span>BPM</span> {{map.bpm}}</div>
+                      </div>
+                      <div class="icons">
+                        <div class="icon-like"><i class="fa-solid fa-heart"></i> {% format_labels map.favourite_count %}</div>
+                        <div class="icon-plays"><i class="fa-solid fa-play"></i> {% format_labels map.play_count %}</div>
+                        <div class="icon-plays">{{ map.language }}</div>
+                        <div class="icon-plays">{{ map.genre }}</div>
+                      </div>
+                </div>
 
-            <a href="{{ map.link }}">link</a>   
-            <img src="{{ map.image }}">
-        </div>
-  
+            </div>
+            
     {% if not scroll_state %}        
         {% if forloop.last %}
-            <button id="more" hx-get="{{request.get_full_path}}&page={{ page_obj.number|add:1 }}" hx-trigger="click" hx-swap="outerHTML" hx-target="#maps">load more</button>
-
-            <script>
-                var button = document.querySelector('#more');
-                // Добавление обработчика события на клик по кнопке
-                button.addEventListener('click', function() {
-                // Плавная прокрутка страницы вверх
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                });
-            </script>
-
-            
-
+            <a id="more" href="#maps" hx-get="{{request.get_full_path}}&page={{ page_obj.number|add:1 }}" hx-trigger="click" hx-swap="outerHTML" hx-target="#maps" class="btn btn-dark">Load more</a>
             {% endif %}
     {% endif %}
 
     {% endfor %}
+
+    {% if scroll_state %}
+        </div>
+        <div hx-get="{{request.get_full_path}}&page={{ page_obj.number|add:1 }}" hx-trigger="revealed" hx-swap="afterend" hx-target="this">
+    {% endif %}
+
         <script>
                                 
             var slider = document.getElementById("myRange");
