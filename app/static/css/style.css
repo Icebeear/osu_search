@@ -64,7 +64,7 @@ h1, h2, h3, h4, p, label, option {
 }
 
 .form-select {
-    width: 120px;
+    width: 130px;
     background-color: #282D3A;
     border-color: #282D3A;
     color: rgb(250, 246, 240);
@@ -178,7 +178,7 @@ h1, h2, h3, h4, p, label, option {
   }
   
   .field1 {
-    font-size: 1em;
+    font-size: 16px;
     color: aliceblue;
   }
 
@@ -193,50 +193,34 @@ h1, h2, h3, h4, p, label, option {
     margin-top: 10px;
   }
   
-  .icon {
-    width: 70px;
-    height: 30px;
+  .icon:not(.val) {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 6px;
     margin-right: 10px;
     color: rgb(255, 255, 255);
     background-color: rgb(24, 18, 43);
     border-radius: 6px;
     box-sizing: border-box;
-    font-size: 14px;
-    padding: 2px;
+    font-size: 16px;
     font-weight: bold;
   }
 
-  .icon-bpm {
-    width: 100px;
-    height: 30px;
-    margin-right: 10px;
-    color: rgb(255, 255, 255);
-    background-color: rgb(24, 18, 43);
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 14px;
-    padding: 2px;
-    font-weight: bold;
-  }
 
-  .icons span {
+.val {
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.star-span {
     font-size: 1.1em;
-    margin-right: 8px;
-    margin-left: 8px;
 }
 
-.icon-plays {
-    width: 80px;
-    height: 30px;
-    margin-right: 10px;
-    color: rgb(255, 255, 255);
-    background-color: rgb(24, 18, 43);
-    border-radius: 6px;
+.icons i {
     box-sizing: border-box;
-    font-size: 14px;
-    padding: 5px;
-    font-weight: bold;
 }
+
+
 
 a {
     text-decoration: none;
@@ -244,18 +228,6 @@ a {
     border-bottom: 1px solid;
 }
 
-.icon-like {
-    width: 60px;
-    height: 30px;
-    margin-right: 10px;
-    color: rgb(255, 255, 255);
-    background-color: rgb(24, 18, 43);
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 14px;
-    padding: 5px;
-    font-weight: bold;
-}
   
   
   .stats {
@@ -271,16 +243,12 @@ a {
 
 
 
-  #maps {
-    padding: 30px;
-}
-
   .map-card {
     background-color: rgb(57, 48, 83);
     margin: 20px;
     padding: 10px;
     width: 550px;
-    height: 300px;
+    height: 320px;
     border: 1px solid;
     border-radius: 10px;
     box-sizing: border-box;
@@ -289,4 +257,21 @@ a {
   .map-img {
     width: 250px;
     height: 180px;
+    border-radius: 10px
+  }
+
+  .cont{
+    position: relative;
+    display: inline-block;
+  }
+  
+  .overlay-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    opacity: 0.9;
+    margin-left: 95px;
+    margin-top: 50px;
   }

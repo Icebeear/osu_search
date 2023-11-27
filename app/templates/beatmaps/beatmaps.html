@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load custom_tags %}
+{% load static %}
 {% block content %}
 
     {% if not htmx %}
@@ -14,33 +15,41 @@
         
             <script>
                 var audioPlayers = {};
+                var images = {};
             
                 function toggleAudio(songId) {
                     if (audioPlayers[songId] === undefined) {
                         audioPlayers[songId] = document.getElementById("audioPlayer" + songId);
+                        images[songId] = document.getElementById("overlay-img-" + songId);
                     }
             
                     var audio = audioPlayers[songId];
-            
+                    var image = images[songId];
+
                     Object.keys(audioPlayers).forEach(function(key) {
                         if (key !== songId) {
                             audioPlayers[key].pause();
+                            images[key].src = '{% static "play.png" %}';
                         }
                     });
             
                     var isPlaying = audio.paused;
+                    
             
                     if (isPlaying) {
                         audio.play();
+                        image.src = '{% static "pause.png" %}';
                     } else {
                         audio.pause();
+                        image.src = '{% static "play.png" %}';
                     }
+                    
                 }
             </script>
             
             <div class="col-xl-4 col-lg-6 col-md-12">
 
-                <audio id="audioPlayer{{map.song_id}}">
+                <audio id="audioPlayer{% get_diff_id map.link %}">
                     <source src="//b.ppy.sh/preview/{{map.song_id}}.mp3" type="audio/mp3">
                 </audio>
     
@@ -49,34 +58,40 @@
                 <div class="map-card">
                     <div class="row">
                         <div class="col">
-                            <img src="https://assets.ppy.sh/beatmaps/{{map.song_id}}/covers/list@2x.jpg" alt="Image" class="map-img" onclick="toggleAudio('{{map.song_id}}')">
+                            <div class="cont">
+                                <img src="{% static 'play.png' %}" alt="Overlay Image" class="overlay-img" id="overlay-img-{% get_diff_id map.link %}" onclick="toggleAudio('{% get_diff_id map.link %}')">
+                                <img src="https://assets.ppy.sh/beatmaps/{{map.song_id}}/covers/list@2x.jpg" alt="Image" class="map-img" >
+                            </div>
+                            
                         </div>
                         <div class="col">
                             <div class="fields">
-                                <div class="map-title"><a href="{{ map.link }}" target=»_blank»>{{ map.title}}</a></div>
+                                <div class="map-title"><a href="{{ map.link }}" target=»_blank»>{% title_resize map.title %}</a></div>
                                 <div class="field1"><i class="fa-solid fa-microphone"></i> {{ map.artist }}</div>
                                 <div class="field1"><i class="fa-solid fa-user"></i> {{ map.mapper }}</div>
                                 <div class="field1"><i class="fa-solid fa-hourglass-end"></i> {{ map.total_length|format_time }}</div>
                                 <div class="field1"><i class="fa-solid fa-calendar"></i> {{ map.submit_date }}</div>
-                                <div class="field1"><i class="fa-solid fa-hashtag"></i> {{ map.source }}</div>
+                                {% if map.source %}
+                                    <div class="field1"><i class="fa-solid fa-hashtag"></i> {{ map.source }}</div>
+                                {% endif %}
                               </div>
                         </div>
                     </div>
                     
                     
                       <div class="icons">
-                        <div class="icon" style="background-color: {% set_color map.star_difficulty  %}"><i class="fa-solid fa-star"></i> <span>{% format_dif map.star_difficulty %}</span></div>
-                        <div class="icon"><span>AR</span> {{map.ar}}</div>
-                        <div class="icon"><span>OD</span> {{map.od}}</div>
-                        <div class="icon"><span>CS</span> {{map.cs}}</div>
-                        <div class="icon"><span>HP</span> {{map.hp}}</div>
-                        <div class="icon-bpm"><span>BPM</span> {{map.bpm}}</div>
+                        <div class="icon" style="background-color: {% set_color map.star_difficulty  %}"><i class="fa-solid fa-star"></i> <span class="star-span">{% format_dif map.star_difficulty %}</span></div>
+                        <div class="icon"><span>AR</span> <span class="val">{{map.ar}}</span></div>
+                        <div class="icon"><span>OD</span> <span class="val">{{map.od}}</span></div>
+                        <div class="icon"><span>CS</span> <span class="val">{{map.cs}}</span></div>
+                        <div class="icon"><span>HP</span> <span class="val">{{map.hp}}</span></div>
+                        <div class="icon"><span>BPM</span><span class="val">{% bpm_round map.bpm %}</span></div>
                       </div>
                       <div class="icons">
-                        <div class="icon-like"><i class="fa-solid fa-heart"></i> {% format_labels map.favourite_count %}</div>
-                        <div class="icon-plays"><i class="fa-solid fa-play"></i> {% format_labels map.play_count %}</div>
-                        <div class="icon-plays">{{ map.language }}</div>
-                        <div class="icon-plays">{{ map.genre }}</div>
+                        <div class="icon"><i class="fa-solid fa-heart"></i> {% format_labels map.favourite_count %}</div>
+                        <div class="icon"><i class="fa-solid fa-play"></i> {% format_labels map.play_count %}</div>
+                        <div class="icon">{{ map.language }}</div>
+                        <div class="icon">{{ map.genre }}</div>
                       </div>
                 </div>
 
