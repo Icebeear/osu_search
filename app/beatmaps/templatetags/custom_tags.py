@@ -28,6 +28,17 @@ def set_color(star):
         return "#000000"
     
 @register.simple_tag
+def set_color_map(map_type):
+    colors = {
+        "ranked": "#393053",
+        "approved": "#6867AC",
+        "loved": "#A267AC",
+        "graveyard": "#323232",
+    }
+
+    return colors[map_type]
+    
+@register.simple_tag
 def format_dif(star):
     return f"{star:.2f}"
 
@@ -35,6 +46,8 @@ def format_dif(star):
 def format_labels(val):
     if val < 1000:
         return val
+    elif val > 1000000:
+        return f"{val // 1000000}m"
     else:
         return f"{val // 1000}k"
 
@@ -52,5 +65,3 @@ def title_resize(title):
         return title[:27] + "..."
     else:
         return title 
-
-#Yomi yori Kikoyu, Koukoku no Tou to Honoo no Shoujo.

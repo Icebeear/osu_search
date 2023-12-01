@@ -5,59 +5,58 @@
 
     {% if not htmx %}
         {% include 'beatmaps/form.html' %}
+        <script>
+            var audioPlayers = {};
+            var images = {};
+        
+            function toggleAudio(songId) {
+                if (audioPlayers[songId] === undefined) {
+                    audioPlayers[songId] = document.getElementById("audioPlayer" + songId);
+                    images[songId] = document.getElementById("overlay-img-" + songId);
+                }
+        
+                var audio = audioPlayers[songId];
+                var image = images[songId];
+
+                Object.keys(audioPlayers).forEach(function(key) {
+                    if (key !== songId) {
+                        audioPlayers[key].pause();
+                        images[key].src = '{% static "imgs/play.png" %}';
+                    }
+                });
+        
+                var isPlaying = audio.paused;
+                
+                if (isPlaying) {
+                    audio.play();
+                    image.src = '{% static "imgs/pause.png" %}';
+                } else {
+                    audio.pause();
+                    image.src = '{% static "imgs/play.png" %}';
+                }
+
+                audio.addEventListener('ended', function() {
+                    image.src = '{% static "imgs/play.png" %}';
+                });
+                
+            }
+            
+        </script>
     {% endif %}
 
     
     <div class="row" id="maps">
     {% for map in maps %}
 
-        
-        
-            <script>
-                var audioPlayers = {};
-                var images = {};
-            
-                function toggleAudio(songId) {
-                    if (audioPlayers[songId] === undefined) {
-                        audioPlayers[songId] = document.getElementById("audioPlayer" + songId);
-                        images[songId] = document.getElementById("overlay-img-" + songId);
-                    }
-            
-                    var audio = audioPlayers[songId];
-                    var image = images[songId];
-
-                    Object.keys(audioPlayers).forEach(function(key) {
-                        if (key !== songId) {
-                            audioPlayers[key].pause();
-                            images[key].src = '{% static "imgs/play.png" %}';
-                        }
-                    });
-            
-                    var isPlaying = audio.paused;
-                    
-            
-                    if (isPlaying) {
-                        audio.play();
-                        image.src = '{% static "imgs/pause.png" %}';
-                    } else {
-                        audio.pause();
-                        image.src = '{% static "imgs/play.png" %}';
-                    }
-                    
-                }
-            </script>
-            
             <div class="col-xl-4 col-lg-6 col-md-12">
 
-                <audio id="audioPlayer{% get_diff_id map.link %}">
-                    <source src="//b.ppy.sh/preview/{{map.song_id}}.mp3" type="audio/mp3">
-                </audio>
-    
-    
-                <div class="map-card">
+                <div class="map-card" style="background-color: {% set_color_map map.map_type %}">
                     <div class="row">
                         <div class="col">
                             <div class="cont">
+                                <audio id="audioPlayer{% get_diff_id map.link %}">
+                                    <source src="//b.ppy.sh/preview/{{map.song_id}}.mp3" type="audio/mp3">
+                                </audio>
                                 <img src="{% static 'imgs/play.png' %}" alt="Overlay Image" class="overlay-img" id="overlay-img-{% get_diff_id map.link %}" onclick="toggleAudio('{% get_diff_id map.link %}')">
                                 <img src="https://assets.ppy.sh/beatmaps/{{map.song_id}}/covers/list@2x.jpg" alt="Image" class="map-img" >
                             </div>
@@ -76,7 +75,6 @@
                               </div>
                         </div>
                     </div>
-                    
                     
                       <div class="icons">
                         <div class="icon" style="background-color: {% set_color map.star_difficulty  %}"><i class="fa-solid fa-star"></i> <span class="star-span">{% format_dif map.star_difficulty %}</span></div>

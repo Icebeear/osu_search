@@ -1,89 +1,58 @@
 from beatmaps.models import Beatmap
 from django.db.models import Q
 
-from django.views.generic import TemplateView
 from django.views.generic.list import ListView
+from django.views.generic import TemplateView
 
 from datetime import datetime
 
 
 class FormValues:
 
+
     def get_languages(self):
-        # return Beatmap.objects.values("language").distinct().order_by("language")
-        return [{"name": language} for language in ["japanese", "instrumental", 
-                                                    "english", "russian", "korean",
-                                                    "chinese", "german", "polish",
-                                                    "french", "italian", "spanish",
-                                                    "swedish", "other"]]
+        languages = [
+            "japanese", "instrumental", "english", "russian", "korean",
+            "chinese", "german", "polish", "french", "italian", "spanish",
+            "swedish", "other"
+        ]
+        
+        return [{"name": language} for language in languages]
+
 
     def get_genres(self):
-        # return Beatmap.objects.values('genre').distinct().order_by("genre")
-        return [{"name": genre} for genre in ["anime", "rock", "metal", 
-                                              "pop", "video game", "electronic", 
-                                              "hip hop", "classical", 
-                                              "jazz", "folk", "novelty"]]
+        genres = [
+            "anime", "rock", "metal", 
+            "pop", "video game", "electronic", 
+            "hip hop", "classical", 
+            "jazz", "folk", "novelty"
+        ]
+        
+        return [{"name": genre} for genre in genres]
+    
     
     def get_map_types(self):
-        # return Beatmap.objects.values('map_type').distinct().order_by("map_type")
-        return [{"type": map_type} for map_type in ["ranked", "approved", "qualified", 
-                                                    "loved", "pending", "WIP"]]
+        map_types = [
+            "ranked", "approved", 
+            "loved", "graveyard",
+        ]
+        
+        return [{"type": map_type} for map_type in map_types]
     
+
     def get_order_values(self):
         return [
-            {
-                "val": "favourite_count",
-                "name": "Favorites",
-            },
-
-            {
-                "val": "play_count",
-                "name":  "Play count",
-            },
-
-            {
-                "val": "submit_date",
-                "name":  "Date",
-            },
-
-            {
-                "val": "total_length",
-                "name":  "Length",
-            },
-
-            {
-                "val": "star_difficulty",
-                "name":  "Star",
-            },
-            
-            {
-                "val": "bpm",
-                "name":  "BPM",
-            },
-
-            {
-                "val": "ar",
-                "name":  "AR",
-            },
-
-            {
-                "val": "od",
-                "name":  "OD",
-            },
-
-            {
-                "val": "cs",
-                "name":  "CS",
-            },
-
-            {
-                "val": "hp",
-                "name":  "HP",
-            },
+            {"val": "favourite_count", "name": "Favorites"},
+            {"val": "play_count", "name": "Play count"},
+            {"val": "submit_date", "name": "Date"},
+            {"val": "total_length", "name": "Length"},
+            {"val": "star_difficulty", "name": "Star"},
+            {"val": "bpm", "name": "BPM"},
+            {"val": "ar", "name": "AR"},
+            {"val": "od", "name": "OD"},
+            {"val": "cs", "name": "CS"},
+            {"val": "hp", "name": "HP"}
         ]
-    
-    # def get_main_fields(self):
-    #     return {"title", "artist", "source", "mapper"} 
 
 
 class MapsView(FormValues, TemplateView):
@@ -96,6 +65,7 @@ class FilterMapsView(FormValues, ListView):
     context_object_name = 'maps'
     paginate_by = 12
     
+
     def get_queryset(self):
         self.title = self.request.GET.get("title") or ""
         self.artist = self.request.GET.get("artist") or ""
@@ -176,17 +146,17 @@ class FilterMapsView(FormValues, ListView):
         )
 
 
-
         self.order = self.request.GET.get('query_order') 
         self.order_state = self.request.GET.get('order_state')
         self.order = f"-{self.order}" if not self.order_state else self.order 
 
-
         queryset = queryset.order_by(self.order)
-        
 
+        print(queryset)
+        
         return queryset
     
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 

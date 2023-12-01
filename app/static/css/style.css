@@ -244,7 +244,6 @@ a {
 
 
   .map-card {
-    background-color: rgb(57, 48, 83);
     margin: 20px;
     padding: 10px;
     width: 550px;
@@ -275,3 +274,20 @@ a {
     margin-left: 95px;
     margin-top: 50px;
   }
+
+
+@media (min-width: 1200px) {
+    .col-xl-4 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+}
+
+@media (min-width: 1800px) {
+    .col-xl-4 {
+        flex: 0 0 auto;
+        width: 33.33333333%;
+    }
+}
+
+
