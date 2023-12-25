@@ -73,7 +73,11 @@ class FilterMapsView(FormValues, ListView):
         self.mapper = self.request.GET.get("mapper") or ""  
 
         self.min_date = self.request.GET.get("min_date") or "2007-10-06"
-        self.max_date = self.request.GET.get("max_date") or datetime.now().strftime("%Y-%m-%d")
+
+        self.max_date = (
+            self.request.GET.get("max_date") or 
+            datetime.now().strftime("%Y-%m-%d")
+        )
 
         self.min_length = self.request.GET.get("min_length") or 0
         self.max_length = self.request.GET.get("max_length") or 4000
@@ -108,9 +112,20 @@ class FilterMapsView(FormValues, ListView):
         self.scroll_state = self.request.GET.get("scroll_state")
 
 
-        language_list = self.request.GET.getlist("language") or [data["name"] for data in self.get_languages()]
-        genre_list = self.request.GET.getlist("genre") or [data["name"] for data in self.get_genres()]
-        map_types_list = self.request.GET.getlist("map_type") or [data["type"] for data in self.get_map_types()]
+        language_list = (
+            self.request.GET.getlist("language") or
+            [data["name"] for data in self.get_languages()]
+        )
+
+        genre_list = (
+            self.request.GET.getlist("genre") 
+            or [data["name"] for data in self.get_genres()]
+        )
+
+        map_types_list = (
+            self.request.GET.getlist("map_type") 
+            or [data["type"] for data in self.get_map_types()]
+        )
 
         queryset = Beatmap.objects.all().distinct()
 
@@ -152,8 +167,6 @@ class FilterMapsView(FormValues, ListView):
 
         queryset = queryset.order_by(self.order)
 
-        print(queryset)
-        
         return queryset
     
 
@@ -161,7 +174,7 @@ class FilterMapsView(FormValues, ListView):
         context = super().get_context_data(**kwargs)
 
         context["htmx"] = bool(self.request.htmx)
-
+        
         context['title'] = self.title
         context['artist'] = self.artist
         context['source'] = self.source
@@ -174,16 +187,27 @@ class FilterMapsView(FormValues, ListView):
         context['query_order'] = self.order.replace("-", "")
 
         context['min_length'] = self.min_length if self.min_length != 0 else ""
-        context['max_length'] = self.max_length if self.max_length != 4000 else ""
+        
+        context['max_length'] = (
+            self.max_length if self.max_length != 4000 else ""
+        )
 
         context['min_bpm'] = self.min_bpm if self.min_bpm != 0 else ""
         context['max_bpm'] = self.max_bpm if self.max_bpm != 500 else ""
 
-        context['min_favorites'] = self.min_favorites if self.min_favorites != 0 else ""
-        context['max_favorites'] = self.max_favorites if self.max_favorites != 100_000 else ""
+        context['min_favorites'] = (
+            self.min_favorites if self.min_favorites != 0 else ""
+        )
+
+        context['max_favorites'] = (
+            self.max_favorites if self.max_favorites != 100_000 else ""
+        )
 
         context['min_plays'] = self.min_plays if self.min_plays != 0 else ""
-        context['max_plays'] = self.max_plays if self.max_plays != 100_000_000 else ""
+
+        context['max_plays'] = (
+            self.max_plays if self.max_plays != 100_000_000 else ""
+        )
 
         context['genres'] = self.request.GET.getlist("genre")
         context['languages'] = self.request.GET.getlist("language")

@@ -1,7 +1,7 @@
 venv
+**/migrations
 osu_script.py
+osu_script_async.py
 __pycache__
 tasks.py
-celerybeat-schedule.dir
-celerybeat-schedule.dat
-celerybeat-schedule.bak
+celerybeat-schedule.*
