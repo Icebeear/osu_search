@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: osu_maps
+      POSTGRES_USER: osu_user
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432"
+
+
+  django_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - API_KEY=$API_KEY
+    command: sh -c "python manage.py makemigrations beatmaps && 
+             python manage.py migrate && 
+             python osu_script_lite.py && 
+             python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - postgres
+    ports:
+     - 8000:8000
+
+
+  # redis:
+  #   image: redis
+  #   ports:
+  #     - "6379:6379"
+  #   command: sh -c "redis-server && redis-cli && PING"
+
+
+  # celery_worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - API_KEY=$API_KEY
+  #   depends_on:
+  #     - django_app
+  #     - postgres
+  #     - redis
+  #   command: "../wait-for-it.sh django_app:8000 -- celery -A app worker --loglevel=info -P solo"
+   
+
+  # celery_beat:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - API_KEY=$API_KEY
+  #   depends_on:
+  #     - django_app
+  #     - postgres
+  #     - redis
+  #   command: "../wait-for-it.sh django_app:8000 -- celery -A app beat"
+    
