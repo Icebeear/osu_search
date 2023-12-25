@@ -20,6 +20,12 @@
 - Redis 
 - Docker
 
+### Интерфейс сайта
+
+<img src="screenshots/osu1.png" width="800" height="400"/>
+<img src="screenshots/osu2.png" width="800" height="400"/>
+<img src="screenshots/osu3.png" width="800" height="400"/>
+
 ## Старт
 #### 1) Клонировать репозиторий 
 
